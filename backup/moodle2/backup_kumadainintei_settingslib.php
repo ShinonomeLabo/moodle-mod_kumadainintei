@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,27 +12,18 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin upgrade file
+ * Plugin custom settings are defined here.
  *
- * @package   local_ci
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_kumadainintei
+ * @category    backup
+ * @copyright   2021 Your Name <you@example.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Execute local_ci upgrade from the given old version.
- *
- * @param int $oldversion
- * @return bool
- */
-function xmldb_local_ci_upgrade($oldversion) {
-    if ($oldversion < 2011033101) {
-        upgrade_plugin_savepoint(true, 2011033101, 'local', 'travis');
-    }
-    return true;
-}
+// More information about the backup process: {@link https://docs.moodle.org/dev/Backup_API}.
+// More information about the restore process: {@link https://docs.moodle.org/dev/Restore_API}.
