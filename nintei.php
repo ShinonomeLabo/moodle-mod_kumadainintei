@@ -90,7 +90,6 @@ if ($is_passed) {
     echo \html_writer::div("合格しました", "alert alert-success");
 } else {
     echo \html_writer::div("不合格の活動があります", "alert alert-danger");
-
 }
 
 echo \html_writer::tag("h3", "学習活動一覧");
