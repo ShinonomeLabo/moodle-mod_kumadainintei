@@ -68,6 +68,10 @@ echo $OUTPUT->header();
 
 if ($submit_grades != null) {
     foreach ($submit_grades as $key => $submit_grade) {
+        if ($submit_grade == null || empty($submit_grade)) {
+            continue;
+        }
+
         $modname = explode("_", $key)[0];
         $cmid = explode("_", $key)[1];
 
