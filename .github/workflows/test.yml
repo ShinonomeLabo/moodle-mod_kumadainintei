@@ -21,9 +21,6 @@ jobs:
           mkdir build
           make init
 
-      - name: Validate
-        run: make validate
-
   citest:
     name: CI test
     needs: selftest
