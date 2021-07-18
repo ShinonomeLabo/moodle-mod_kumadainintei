@@ -16,8 +16,6 @@ jobs:
         with:
           php-version: 7.3
 
-      - uses: php-actions/composer@v6
-
       - name: Initialise
         run: |
           mkdir build
