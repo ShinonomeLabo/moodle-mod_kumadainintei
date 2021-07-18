@@ -26,6 +26,7 @@ namespace mod_kumadainintei;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $DB, $PAGE, $OUTPUT;
 
@@ -56,12 +57,25 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-//grade_submit
-$grade_submit = optional_param_array("grade", null, PARAM_INT);
+if (!has_capability("mod/kumadainintei:viewadmin", $modulecontext)) {
+    $url = new \moodle_url("nintei.php", ["id" => $id]);
+    redirect($url);
+}
+
+$submit_grades = optional_param_array("grade", null, PARAM_INT);
 
 echo $OUTPUT->header();
 
-var_dump($grade_submit);
+if ($submit_grades != null) {
+    foreach ($submit_grades as $key => $submit_grade) {
+        $modname = explode("_", $key)[0];
+        $cmid = explode("_", $key)[1];
+
+        kumadainintei_update_grade($modname, $id, $cmid, $submit_grade);
+    }
+
+    echo \html_writer::div("保存しました", "alert alert-primary");
+}
 
 $courses = get_courses();
 
@@ -74,7 +88,7 @@ foreach ($courses as $course) {
     }
 
     $table = new \html_table();
-    $table->head = ["#", "種別", "名前", "合格点"];
+    $table->head = ["コース", "種別", "名前", "説明", "合格点"];
     echo \html_writer::tag("h3", $course->fullname);
 
     $modules = get_course_mods($course->id);
@@ -83,10 +97,24 @@ foreach ($courses as $course) {
         if ($module->modname === "forum" || $module->modname === "kumadainintei") {
             continue;
         }
+
+        $instance = $DB->get_record($module->modname, ["id" => $cm->instance]);
+        if ($instance) {
+            $instance_intro = $instance->intro;
+        } else {
+            $instance_intro = "";
+        }
+
         $modname = get_string("pluginname", "mod_" . $module->modname);
         $cm = get_coursemodule_from_instance($module->modname, $module->instance);
+        $cm_course = get_course($cm->course);
 
-        $table->data[] = [\html_writer::checkbox("check", $module->id), $modname, $cm->name, \html_writer::empty_tag("input", ["name" => "grade[" . $cm->id . "]", "type" => "text", "value" => $grade_submit != null ? $grade_submit[$cm->id] : ""])];
+        $target_grade = $DB->get_record("kumadainintei_grades", ["kumadaininteiid" => $id, "grade_cmid" => $cm->id]);
+        if ($target_grade) {
+            $table->data[] = [$cm_course->fullname, $modname, $cm->name, $instance_intro, \html_writer::empty_tag("input", ["name" => "grade[" . $module->modname . "_" . $cm->id . "]", "type" => "text", "value" => $target_grade->grade])];
+        } else {
+            $table->data[] = [$cm_course->fullname, $modname, $cm->name, $instance_intro, \html_writer::empty_tag("input", ["name" => "grade[" . $module->modname . "_" . $cm->id . "]", "type" => "text", "value" => ""])];
+        }
     }
 
     echo \html_writer::table($table);

@@ -27,7 +27,7 @@ namespace mod_kumadainintei;
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
-global $DB, $PAGE, $OUTPUT;
+global $DB, $PAGE, $OUTPUT, $USER;
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -59,9 +59,42 @@ $PAGE->set_context($modulecontext);
 $target_grades = $DB->get_records("kumadainintei_grades", ["kumadaininteiid" => $id]);
 
 echo $OUTPUT->header();
-foreach($target_grades as $target_grade){
+
+$table = new \html_table();
+$table->head = ["学習活動名", "内容", "合否"];
+
+$is_passed = true;
+foreach ($target_grades as $target_grade) {
+    $cm = get_coursemodule_from_id($target_grade->grade_modulename, $target_grade->grade_cmid);
+    $grade = grade_get_grades($cm->course, "mod", $target_grade->grade_modulename, $cm->instance, $USER->id);
+
+    $instance = $DB->get_record($target_grade->grade_modulename, ["id" => $cm->instance]);
+    if ($instance) {
+        $instance_intro = $instance->intro;
+    } else {
+        $instance_intro = "";
+    }
+
+    $rawgrade = (float)current(current($grade->items)->grades)->grade;
+    $t_grade = (float)$target_grade->grade;
+
+    if ($rawgrade >= $t_grade) {
+        $table->data[] = [$cm->name . '<br>' . '*ID:' . $cm->instance, $instance_intro, "合格"];
+    } else {
+        $is_passed = false;
+        $table->data[] = [$cm->name . '<br>' . '*ID:' . $cm->instance, $instance_intro, "不合格"];
+    }
+}
+
+if ($is_passed) {
+    echo \html_writer::div("合格しました", "alert alert-success");
+} else {
+    echo \html_writer::div("不合格の活動があります", "alert alert-danger");
 
 }
 
+echo \html_writer::tag("h3", "学習活動一覧");
+
+echo \html_writer::table($table);
 
 echo $OUTPUT->footer();

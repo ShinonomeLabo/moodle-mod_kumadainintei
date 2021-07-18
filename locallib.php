@@ -18,10 +18,10 @@ function kumadainintei_update_grade($modname, $ninteiid, $grade_cmid, $grade)
 {
     global $DB;
 
-    if ($DB->record_exists("kumadainintei_grades", ["kumadaininteiid" => $ninteiid, "grade_modulename" => $modname, "grade_cmid" => $grade_cmid])) {
-        $grade = $DB->get_record("kumadainintei_grades", ["kumadaininteiid" => $ninteiid, "grade_modulename" => $modname, "grade_cmid" => $grade_cmid]);
+    if ($DB->record_exists("kumadainintei_grades", ["kumadaininteiid" => $ninteiid, "grade_cmid" => $grade_cmid])) {
+        $target_grade = $DB->get_record("kumadainintei_grades", ["kumadaininteiid" => $ninteiid, "grade_cmid" => $grade_cmid]);
         $data = new stdClass();
-        $data->id = $grade->id;
+        $data->id = $target_grade->id;
         $data->grade = $grade;
 
         return $DB->update_record("kumadainintei_grades", $data);
