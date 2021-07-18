@@ -17,7 +17,9 @@ jobs:
           php-version: 7.3
 
       - name: Initialise
-        run: make init
+        run: |
+          mkdir build
+          make init
 
       - name: Validate
         run: make validate
@@ -70,7 +72,6 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          mkdir build
           make init
           cp -R tests/Fixture/moodle-local_ci ../moodle-local_ci
           echo $(cd bin; pwd) >> $GITHUB_PATH
