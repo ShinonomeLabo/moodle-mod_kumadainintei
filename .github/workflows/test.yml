@@ -16,15 +16,15 @@ jobs:
         with:
           php-version: 7.3
 
+      - uses: php-actions/composer@v6
+
       - name: Initialise
         run: |
           mkdir build
           make init
-        uses: php-actions/composer@v6
 
       - name: Validate
         run: make validate
-        uses: php-actions/composer@v6
 
   citest:
     name: CI test
