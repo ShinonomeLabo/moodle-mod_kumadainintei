@@ -102,16 +102,16 @@ foreach ($courses as $course) {
             continue;
         }
 
+        $modname = get_string("pluginname", "mod_" . $module->modname);
+        $cm = get_coursemodule_from_instance($module->modname, $module->instance);
+        $cm_course = get_course($cm->course);
+
         $instance = $DB->get_record($module->modname, ["id" => $cm->instance]);
         if ($instance) {
             $instance_intro = $instance->intro;
         } else {
             $instance_intro = "";
         }
-
-        $modname = get_string("pluginname", "mod_" . $module->modname);
-        $cm = get_coursemodule_from_instance($module->modname, $module->instance);
-        $cm_course = get_course($cm->course);
 
         $target_grade = $DB->get_record("kumadainintei_grades", ["kumadaininteiid" => $id, "grade_cmid" => $cm->id]);
         if ($target_grade) {
